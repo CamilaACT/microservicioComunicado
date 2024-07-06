@@ -14,5 +14,5 @@ public class DetalleFormularioDTO {
     private EstadoDetalleDTO estadoDetalleDTO;
     private DocumentoDTO documentoDTO;
     private FormularioDTO formularioDTO;
-    private MatrizEvaluacion matrizEvaluacion; // Nuevo campo para incluir el Formulario relacionado
+    private MatrizEvaluacion matrizEvaluacion; // Campo para incluir MatrizEvaluacion
 }

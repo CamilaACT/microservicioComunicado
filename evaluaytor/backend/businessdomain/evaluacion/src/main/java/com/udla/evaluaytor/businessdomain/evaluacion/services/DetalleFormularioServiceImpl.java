@@ -47,11 +47,35 @@ public class DetalleFormularioServiceImpl implements DetalleFormularioService {
     @Autowired
     private FormularioRepository formularioRepository;
 
+    private DetalleFormularioDTO completeAndConvertToDTO(FormularioEvaluacionDetalle detalle) {
+        FormularioEvaluacionDetalle completedDetalle = completeDetalleWithExternalData(detalle);
+        return convertToDTO(completedDetalle);
+    }
+    
+    private FormularioEvaluacionDetalle completeDetalleWithExternalData(FormularioEvaluacionDetalle detalle) {
+        Long matrizEvaluacionId = detalle.getId_matrizevaluacion();
+    
+        WebClient webClient = webClientBuilder.build();
+    
+        // Llamada a microservicio para obtener MatrizEvaluacion
+        MatrizEvaluacion matriz = webClient.get()
+            .uri("http://localhost:8086/api/empresa/matrizevaluacion/find/{id}", matrizEvaluacionId)
+            .retrieve()
+            .bodyToMono(MatrizEvaluacion.class)
+            .block();
+        detalle.setMatrizEvaluacion(matriz);
+    
+        return detalle;
+    }
+    
     @Override
     public List<DetalleFormularioDTO> getAllDetallesFormulario() {
         List<FormularioEvaluacionDetalle> detalles = detalleFormularioRepository.findAll();
-        return detalles.stream().map(this::convertToDTO).collect(Collectors.toList());
+        return detalles.stream()
+            .map(this::completeAndConvertToDTO)
+            .collect(Collectors.toList());
     }
+    
 
     @Override
     public DetalleFormularioDTO getDetalleFormularioById(Long id) {
@@ -65,7 +89,7 @@ public class DetalleFormularioServiceImpl implements DetalleFormularioService {
         FormularioEvaluacionDetalle savedDetalle = detalleFormularioRepository.save(detalle);
         return convertToDTO(savedDetalle);
     }
-
+    
     @Override
     public DetalleFormularioDTO updateDetalleFormulario(Long id, DetalleFormularioCreateUpdateDTO detalleFormularioDTO) {
         Optional<FormularioEvaluacionDetalle> detalleOpt = detalleFormularioRepository.findById(id);
@@ -73,21 +97,24 @@ public class DetalleFormularioServiceImpl implements DetalleFormularioService {
             FormularioEvaluacionDetalle detalle = detalleOpt.get();
             detalle.setCumplimiento(detalleFormularioDTO.getCumplimiento());
             detalle.setObservacion(detalleFormularioDTO.getObservacion());
-
+    
             Optional<EstadoDetalle> estadoOpt = estadoDetalleRepository.findById(detalleFormularioDTO.getEstadoDetalleId());
             estadoOpt.ifPresent(detalle::setEstadoDetalle);
-
+    
             Optional<Documento> documentoOpt = documentoRepository.findById(detalleFormularioDTO.getDocumentoId());
             documentoOpt.ifPresent(detalle::setDocumento);
-
+    
             Optional<FormularioEvaluacion> formularioOpt = formularioRepository.findById(detalleFormularioDTO.getFormularioId());
             formularioOpt.ifPresent(detalle::setFormulario);
-
+    
+            detalle.setId_matrizevaluacion(detalleFormularioDTO.getId_matrizevaluacion()); // Setear el ID de la matriz de evaluación
+    
             FormularioEvaluacionDetalle updatedDetalle = detalleFormularioRepository.save(detalle);
             return convertToDTO(updatedDetalle);
         }
         return null; // O lanza una excepción
     }
+    
 
     @Override
     public void deleteDetalleFormulario(Long id) {
@@ -101,54 +128,50 @@ public class DetalleFormularioServiceImpl implements DetalleFormularioService {
         dto.setId(detalle.getId());
         dto.setCumplimiento(detalle.getCumplimiento());
         dto.setObservacion(detalle.getObservacion());
-
+    
         if (detalle.getEstadoDetalle() != null) {
             EstadoDetalleDTO estadoDTO = new EstadoDetalleDTO();
             estadoDTO.setId(detalle.getEstadoDetalle().getId());
             estadoDTO.setNombre(detalle.getEstadoDetalle().getNombre());
             dto.setEstadoDetalleDTO(estadoDTO);
         }
-
+    
         if (detalle.getDocumento() != null) {
             DocumentoDTO documentoDTO = new DocumentoDTO();
             documentoDTO.setId(detalle.getDocumento().getId());
             documentoDTO.setFormato(detalle.getDocumento().getFormato());
-           // documentoDTO.setPath(detalle.getDocumento().getPath());
             dto.setDocumentoDTO(documentoDTO);
         }
-
+    
         if (detalle.getFormulario() != null) {
             FormularioDTO formularioDTO = new FormularioDTO();
             formularioDTO.setId(detalle.getFormulario().getId());
             formularioDTO.setFecha(detalle.getFormulario().getFecha());
             formularioDTO.setNumero(detalle.getFormulario().getNumero());
             formularioDTO.setEvaluacion(detalle.getFormulario().getEvaluacion());
-
+    
             if (detalle.getFormulario().getEstadoFormulario() != null) {
                 EstadoFormularioDTO estadoFormularioDTO = new EstadoFormularioDTO();
                 estadoFormularioDTO.setId(detalle.getFormulario().getEstadoFormulario().getId());
                 estadoFormularioDTO.setNombre(detalle.getFormulario().getEstadoFormulario().getNombre());
                 formularioDTO.setEstadoFormularioDTO(estadoFormularioDTO);
             }
-
+    
             dto.setFormularioDTO(formularioDTO);
         }
-
-        // Convertir MatrizEvaluacion
-        if (detalle.getMatrizEvaluacion() != null) {
-            MatrizEvaluacion matrizDTO = new MatrizEvaluacion();
-            matrizDTO.setId(detalle.getMatrizEvaluacion().getId());
-            matrizDTO.setPregunta(detalle.getMatrizEvaluacion().getPregunta());
-            matrizDTO.setPuntos(detalle.getMatrizEvaluacion().getPuntos());
-            matrizDTO.setRequiereDocumento(detalle.getMatrizEvaluacion().getRequiereDocumento());
-            dto.setMatrizEvaluacion(matrizDTO);
     
+        if (detalle.getMatrizEvaluacion() != null) {
+            MatrizEvaluacion matriz = new MatrizEvaluacion();
+            matriz.setId(detalle.getMatrizEvaluacion().getId());
+            matriz.setPregunta(detalle.getMatrizEvaluacion().getPregunta());
+            matriz.setPuntos(detalle.getMatrizEvaluacion().getPuntos());
+            matriz.setRequiereDocumento(detalle.getMatrizEvaluacion().getRequiereDocumento());
+            dto.setMatrizEvaluacion(matriz);
         }
-
-        
-
+    
         return dto;
     }
+    
 
     private FormularioEvaluacionDetalle convertToEntity(DetalleFormularioCreateUpdateDTO dto) {
         FormularioEvaluacionDetalle detalle = new FormularioEvaluacionDetalle();

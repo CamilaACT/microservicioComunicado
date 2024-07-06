@@ -35,10 +35,55 @@ public class FormularioImpl implements FormularioService{
     private EstadoFormularioRepository estadoFormularioRepository;
 
     @Override
-    public List<FormularioDTO> getAllFormularios() {
-        List<FormularioEvaluacion> formularios = formularioRepository.findAll();
-        return formularios.stream().map(this::convertToDTO).collect(Collectors.toList());
-    }
+public List<FormularioDTO> getAllFormularios() {
+    List<FormularioEvaluacion> formularios = formularioRepository.findAll();
+    return formularios.stream()
+        .map(this::completeAndConvertToDTO)
+        .collect(Collectors.toList());
+}
+
+private FormularioEvaluacion completeFormularioWithExternalData(FormularioEvaluacion formulario) {
+    Long proveedorId = formulario.getProveedor_id();
+    Long categoriaId = formulario.getCategorida_id();
+    Long peritoId = formulario.getPerito_id();
+
+    WebClient webClient = webClientBuilder.build();
+
+    // Llamada a microservicio para obtener Proveedor
+    Proveedor proveedor = webClient.get()
+        .uri("http://localhost:8086/api/empresa/proveedor/findbyid/{id}", proveedorId)
+        .retrieve()
+        .bodyToMono(Proveedor.class)
+        .block();
+    formulario.setProveedor(proveedor);
+
+    // Llamada a microservicio para obtener Categoria
+    Categoria categoria = webClient.get()
+        .uri("http://localhost:8086/api/empresa/categoria/find/{id}", categoriaId)
+        .retrieve()
+        .bodyToMono(Categoria.class)
+        .block();
+    formulario.setCategoria(categoria);
+
+    // Llamada a microservicio para obtener Perito
+    Perito perito = webClient.get()
+        .uri("http://localhost:8086/api/empresa/perito/findbyid/{id}", peritoId)
+        .retrieve()
+        .bodyToMono(Perito.class)
+        .block();
+    formulario.setPerito(perito);
+
+    return formulario;
+}
+
+private FormularioDTO completeAndConvertToDTO(FormularioEvaluacion formulario) {
+    // Completar la información del formulario con datos externos
+    FormularioEvaluacion completedFormulario = completeFormularioWithExternalData(formulario);
+
+    // Convertir a DTO
+    return convertToDTO(completedFormulario);
+}
+
 
     @Override
     public FormularioDTO getFormularioById(Long id) {
@@ -55,21 +100,27 @@ public class FormularioImpl implements FormularioService{
 
     @Override
     public FormularioDTO updateFormulario(Long id, FormularioCreateUpdateDTO formularioDTO) {
-        Optional<FormularioEvaluacion> formularioOpt = formularioRepository.findById(id);
-        if (formularioOpt.isPresent()) {
-            FormularioEvaluacion formulario = formularioOpt.get();
-            formulario.setFecha(Optional.ofNullable(formularioDTO.getFecha()).orElse(new Date()));
-            formulario.setNumero(formularioDTO.getNumero());
-            formulario.setEvaluacion(formularioDTO.getEvaluacion());
-
-            Optional<EstadoFormulario> estadoOpt = estadoFormularioRepository.findById(formularioDTO.getEstadoFormularioId());
-            estadoOpt.ifPresent(formulario::setEstadoFormulario);
-
-            FormularioEvaluacion updatedFormulario = formularioRepository.save(formulario);
-            return convertToDTO(updatedFormulario);
-        }
-        return null; // O lanza una excepción
+        FormularioEvaluacion formulario = formularioRepository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Formulario no encontrado"));
+    
+        formulario.setFecha(Optional.ofNullable(formularioDTO.getFecha()).orElse(new Date()));
+        formulario.setNumero(formularioDTO.getNumero());
+        formulario.setEvaluacion(formularioDTO.getEvaluacion());
+    
+        // Asignar EstadoFormulario
+        EstadoFormulario estadoFormulario = estadoFormularioRepository.findById(formularioDTO.getEstadoFormularioId())
+            .orElseThrow(() -> new RuntimeException("EstadoFormulario no encontrado"));
+        formulario.setEstadoFormulario(estadoFormulario);
+    
+        // Asignar IDs de Perito, Proveedor y Categoria
+        formulario.setPerito_id(formularioDTO.getPeritoId());
+        formulario.setProveedor_id(formularioDTO.getProveedorId());
+        formulario.setCategorida_id(formularioDTO.getCategoridaId());
+    
+        FormularioEvaluacion savedFormulario = formularioRepository.save(formulario);
+        return convertToDTO(savedFormulario);
     }
+    
 
     @Override
     public void deleteFormulario(Long id) {
@@ -125,10 +176,17 @@ public class FormularioImpl implements FormularioService{
         formulario.setFecha(Optional.ofNullable(dto.getFecha()).orElse(new Date()));
         formulario.setNumero(dto.getNumero());
         formulario.setEvaluacion(dto.getEvaluacion());
-
-        Optional<EstadoFormulario> estadoOpt = estadoFormularioRepository.findById(dto.getEstadoFormularioId());
-        estadoOpt.ifPresent(formulario::setEstadoFormulario);
-
+    
+        // Asignar EstadoFormulario
+        EstadoFormulario estadoFormulario = estadoFormularioRepository.findById(dto.getEstadoFormularioId())
+            .orElseThrow(() -> new RuntimeException("EstadoFormulario no encontrado"));
+        formulario.setEstadoFormulario(estadoFormulario);
+    
+        // Asignar IDs de Perito, Proveedor y Categoria
+        formulario.setPerito_id(dto.getPeritoId());
+        formulario.setProveedor_id(dto.getProveedorId());
+        formulario.setCategorida_id(dto.getCategoridaId());
+    
         return formulario;
     }
 

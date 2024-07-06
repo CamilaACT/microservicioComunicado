@@ -8,6 +8,9 @@ public class FormularioCreateUpdateDTO {
     private Date fecha;
     private String numero; 
     private int evaluacion;
-    private Long estadoFormularioId; // Solo el ID del estado formulario
+    private Long estadoFormularioId;
+    private Long proveedorId;
+    private Long categoridaId;
+    private Long peritoId; // Solo el ID del estado formulario
 }
 

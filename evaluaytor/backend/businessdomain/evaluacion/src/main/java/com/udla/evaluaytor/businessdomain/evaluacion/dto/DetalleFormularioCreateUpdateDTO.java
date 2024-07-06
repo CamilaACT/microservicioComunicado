@@ -9,4 +9,6 @@ public class DetalleFormularioCreateUpdateDTO {
     private Long estadoDetalleId; // Solo el ID del estado detalle
     private Long documentoId;
     private Long formularioId; // Solo el ID del formulario
+    private Long id_matrizevaluacion; // Solo el ID de la matriz de evaluación
+
 }
