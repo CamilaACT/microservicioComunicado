@@ -1,0 +1,13 @@
+com\udla\evaluaytor\businessdomain\empresa\dto\ProveedorDTO.class
+com\udla\evaluaytor\businessdomain\empresa\dto\CategoriaDTO.class
+com\udla\evaluaytor\businessdomain\empresa\repositories\EmpresaRepository.class
+com\udla\evaluaytor\businessdomain\empresa\EmpresaApplication.class
+com\udla\evaluaytor\businessdomain\empresa\models\Empresa.class
+com\udla\evaluaytor\businessdomain\empresa\services\ProveedorService.class
+com\udla\evaluaytor\businessdomain\empresa\models\Categoria.class
+com\udla\evaluaytor\businessdomain\empresa\dto\ProveedorResponseDTO.class
+com\udla\evaluaytor\businessdomain\empresa\repositories\CategoriaRepository.class
+com\udla\evaluaytor\businessdomain\empresa\repositories\ProveedorRepository.class
+com\udla\evaluaytor\businessdomain\empresa\controllers\EmpresaController.class
+com\udla\evaluaytor\businessdomain\empresa\models\Proveedor.class
+com\udla\evaluaytor\businessdomain\empresa\services\ProveedorImpl.class

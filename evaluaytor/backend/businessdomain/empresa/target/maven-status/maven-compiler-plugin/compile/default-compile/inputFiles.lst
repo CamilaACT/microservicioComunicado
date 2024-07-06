@@ -1,0 +1,13 @@
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\controllers\EmpresaController.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\dto\CategoriaDTO.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\dto\ProveedorDTO.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\dto\ProveedorResponseDTO.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\EmpresaApplication.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\models\Categoria.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\models\Empresa.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\models\Proveedor.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\repositories\CategoriaRepository.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\repositories\EmpresaRepository.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\repositories\ProveedorRepository.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\services\ProveedorImpl.java
+D:\Proyectos\UDLA\Evaluaytor\codigofuente\evaluaytor\backend\businessdomain\empresa\src\main\java\com\udla\evaluaytor\businessdomain\empresa\services\ProveedorService.java
